@@ -9,6 +9,7 @@ import com.wallet.repository.WalletRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,10 +20,13 @@ public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository repository;
     private final WalletRepository walletRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, WalletRepository walletRepository){
+    public UserService(UserRepository userRepository, WalletRepository walletRepository,
+                       PasswordEncoder passwordEncoder){
         this.repository = userRepository;
         this.walletRepository = walletRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -33,16 +37,24 @@ public class UserService {
                     log.error("User already exists with the email");
                     throw new RuntimeException("User already exists with the email");
                 });
-        User user = new User(userRequest.getName(), userRequest.getEmail());
+        User user = new User();
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        user.setName(userRequest.getName());
+        user.setEmailId(userRequest.getEmail());
         User savedUser = repository.save(user);
 
+        if(savedUser.getId() == null){
+            return null;
+        }
+        // Wallet creation
         Wallet wallet = new Wallet(savedUser.getId());
         Wallet savedWallet = walletRepository.save(wallet);
         log.info("Wallet updated {}", savedWallet.getBalance());
         return new UserResponse(
                 savedUser.getId(),
                 savedUser.getName(),
-                savedUser.getEmailId());
+                savedUser.getEmailId(),
+                savedUser.getRole());
     }
 
     @Transactional

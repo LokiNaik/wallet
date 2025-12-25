@@ -6,6 +6,7 @@ public class CreateUserRequest {
     private String name;
 
     private String email;
+    private String password;
 
     public String getEmail() {
         return email;
@@ -15,4 +16,7 @@ public class CreateUserRequest {
         return name;
     }
 
+    public String getPassword() {
+        return password;
+    }
 }

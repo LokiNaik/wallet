@@ -5,8 +5,7 @@ import lombok.*;
 
 import java.util.Objects;
 
-@Getter
-@Setter
+
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "emailId"))
 public class User {
@@ -20,9 +19,16 @@ public class User {
     @Column(nullable = false)
     private String emailId;
 
-    public User(String name, String email) {
+    @Column(nullable = false)
+    private String password;
+
+    @Column
+    private String role = "USER";
+
+    public User(String name, String email, String password) {
         this.emailId = email;
         this.name = name;
+        this.password = password;
     }
     public User(){
         
@@ -39,5 +45,45 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hashCode(emailId);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmailId() {
+        return emailId;
+    }
+
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
